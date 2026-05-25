@@ -516,7 +516,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
     <div class="hero-val" id="hero-val">—</div>
     <div class="hero-sub">
       <span class="sbadge failing" id="sbadge">● Calculating</span>
-      <span style="font-size:12px;color:var(--t3)">30 crédits · 6 rattrapages</span>
+      <span style="font-size:12px;color:var(--t3)">30 crédits · 7 rattrapages</span>
     </div>
     <div class="hero-msg" id="hero-msg">Ajustez les curseurs pour voir votre moyenne projetée.</div>
   </div>
@@ -548,7 +548,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
   <div class="scard cin d4">
     <div class="scard-lbl">Moyenne Rattrapages</div>
     <div class="scard-val" id="s-ravg" style="color:var(--a1)">—</div>
-    <div class="scard-sub">6 matières variables</div>
+    <div class="scard-sub">7 matières variables</div>
   </div>
 </div>
 
@@ -567,7 +567,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 
     <!-- Retake -->
     <div class="card cin d3">
-      <div class="sec-ttl">✏️ Matières à Rattraper <span class="sec-badge">6 matières</span>
+      <div class="sec-ttl">✏️ Matières à Rattraper <span class="sec-badge">7 matières</span>
         <span style="margin-left:auto;font-size:11px;color:var(--t3)" id="var-avg-lbl">Moy. —</span>
       </div>
       <div id="subs-container"></div>
@@ -610,7 +610,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
       </div>
       <div class="goal-grid">
         <div class="goal-item">
-          <div class="gl">Moyenne requise (5 autres)</div>
+          <div class="gl">Moyenne requise (6 autres)</div>
           <div class="gv" id="goal-need">—</div>
         </div>
         <div class="goal-item">
@@ -638,7 +638,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 <!-- TARGETS -->
 <div class="targets-card cin d5">
   <div class="sec-ttl">📋 Notes Requises par Objectif</div>
-  <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:2px">Moyenne nécessaire dans les 5 autres matières de rattrapage (hors Analyse 1)</div>
+  <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:2px">Moyenne nécessaire dans les 6 autres matières de rattrapage (hors Analyse 1)</div>
   <div class="tgrid" id="tgrid"></div>
 </div>
 
@@ -665,20 +665,20 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 // ── DATA ──────────────────────────────────────────────
 const FIXED_META = [
   {name:'Atelier de Prog 1',     defGrade:0.00, cr:3},
-  {name:'Algo et Structure',     defGrade:0.00,cr:4},
   {name:'Anglais 1',             defGrade:0.00, cr:2},
   {name:'Tech de Communication', defGrade:0.00, cr:2}
 ];
 const SUBS = [
   {name:'Analyse 1',                  cr:3, def:0.00,  max:20,  hint:'(max ~7)'},
   {name:'Algèbre 1',                  cr:3, def:0.00, max:20},
+  {name:'Algo et Structure',          cr:4, def:0.00, max:20},
   {name:'Électricité Électronique',   cr:4, def:0.00, max:20},
   {name:'Propagation et Rayonnement', cr:2, def:0.00, max:20},
   {name:"Sys d'Exploitation 1",       cr:4, def:0.00, max:20},
   {name:'Système Logique',            cr:3, def:0.00, max:20}
 ];
 const TOTAL_CR = 30;
-const OTHER5_CR = SUBS.slice(1).reduce((s,x)=>s+x.cr,0); // 16
+const OTHER_CR = SUBS.slice(1).reduce((s,x)=>s+x.cr,0); // 20
 
 // ── MUTABLE FIXED STATE ───────────────────────────────
 let fixedGrades = (() => {
@@ -706,7 +706,7 @@ function calcMoy(g) {
   return (getFixedContrib() + g.reduce((s,v,i)=>s+v*SUBS[i].cr,0)) / TOTAL_CR;
 }
 function neededFor(target) {
-  return (target*TOTAL_CR - getFixedContrib() - grades[0]*SUBS[0].cr) / OTHER5_CR;
+  return (target*TOTAL_CR - getFixedContrib() - grades[0]*SUBS[0].cr) / OTHER_CR;
 }
 
 // ── BUILD FIXED ───────────────────────────────────────
@@ -970,12 +970,12 @@ function genRecs(moy) {
   if(moy<10){
     recs.push({ico:'⚡',txt:`Priorité : ${SUBS[maxCrI].name} (${SUBS[maxCrI].cr} cr) — coefficient le plus élevé`});
     const n=neededFor(10);
-    recs.push({ico:'🎯',txt: n<=20?`Il vous faut ${n.toFixed(1)} de moyenne dans les 5 autres matières pour atteindre 10`:'Atteindre 10 est très difficile — maximisez chaque note'});
+    recs.push({ico:'🎯',txt: n<=20?`Il vous faut ${n.toFixed(1)} de moyenne dans les 6 autres matières pour atteindre 10`:'Atteindre 10 est très difficile — maximisez chaque note'});
     recs.push({ico:'💡',txt:`${SUBS[minI].name} est votre point faible (${grades[minI].toFixed(1)}) — améliorez-la si possible`});
   } else if(moy<12){
     recs.push({ico:'✅',txt:'Vous êtes admis — excellent travail !'});
     const n12=neededFor(12);
-    if(n12<=20) recs.push({ico:'🚀',txt:`Pour la mention Bien, il faut ${n12.toFixed(1)} moy. dans les 5 autres matières`});
+    if(n12<=20) recs.push({ico:'🚀',txt:`Pour la mention Bien, il faut ${n12.toFixed(1)} moy. dans les 6 autres matières`});
     recs.push({ico:'📈',txt:`Boostez ${SUBS[minI].name} pour améliorer votre classement`});
   } else {
     recs.push({ico:'🏆',txt:'Excellent ! Vous obtenez la mention Bien ou mieux'});
@@ -1000,7 +1000,7 @@ function updateGoal() {
   const msg=document.getElementById('goal-msg');
   if(needed<=0) msg.textContent=`Félicitations ! Vous avez déjà atteint votre objectif de ${target}/20 🎉`;
   else if(needed>20) msg.textContent=`Atteindre ${target}/20 est mathématiquement impossible avec la note actuelle d'Analyse 1. Essayez un objectif plus bas.`;
-  else msg.textContent=`Pour atteindre ${target}/20, vous avez besoin d'une moyenne de ${needed.toFixed(2)} dans Algèbre, Électricité, Propagation, Sys Exp. et Sys Logique.`;
+  else msg.textContent=`Pour atteindre ${target}/20, vous avez besoin d'une moyenne de ${needed.toFixed(2)} dans Algèbre, Algo et Structure, Électricité, Propagation, Sys Exp. et Sys Logique.`;
 }
 
 // ── TARGETS ───────────────────────────────────────────
