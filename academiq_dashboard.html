@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark" data-accent="blue">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AcademiQ — Rattrapage Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#07071a;--bg2:#0d0d24;
+  --s1:rgba(255,255,255,.03);--s2:rgba(255,255,255,.06);--s3:rgba(255,255,255,.10);
+  --b:rgba(255,255,255,.08);--bh:rgba(255,255,255,.18);
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#475569;
+  --a1:#4f9eff;--a2:#818cf8;--ag:rgba(79,158,255,.3);
+  --ag2:linear-gradient(135deg,#4f9eff,#a855f7);
+  --ok:#10d984;--ok-bg:rgba(16,217,132,.12);
+  --warn:#f59e0b;--warn-bg:rgba(245,158,11,.12);
+  --err:#f43f5e;--err-bg:rgba(244,63,94,.12);
+  --r1:8px;--r2:14px;--r3:20px;
+  --ease:cubic-bezier(.4,0,.2,1);--eout:cubic-bezier(0,0,.2,1);--esp:cubic-bezier(.34,1.56,.64,1)
+}
+[data-theme="light"]{
+  --bg:#f0f4ff;--bg2:#e8edf8;
+  --s1:rgba(255,255,255,.7);--s2:rgba(255,255,255,.85);--s3:rgba(0,0,0,.06);
+  --b:rgba(0,0,0,.08);--bh:rgba(0,0,0,.18);
+  --t1:#0f172a;--t2:#334155;--t3:#64748b
+}
+[data-accent="purple"]{--a1:#a855f7;--a2:#ec4899;--ag:rgba(168,85,247,.3);--ag2:linear-gradient(135deg,#a855f7,#ec4899)}
+[data-accent="cyan"]  {--a1:#06b6d4;--a2:#3b82f6;--ag:rgba(6,182,212,.3);--ag2:linear-gradient(135deg,#06b6d4,#3b82f6)}
+[data-accent="emerald"]{--a1:#10d984;--a2:#06b6d4;--ag:rgba(16,217,132,.3);--ag2:linear-gradient(135deg,#10d984,#06b6d4)}
+
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ── BACKGROUND ── */
+.bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-canvas::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px
+}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);animation:float 9s ease-in-out infinite}
+.orb1{width:700px;height:700px;background:var(--a1);opacity:.09;top:-20%;left:-15%;animation-delay:0s}
+.orb2{width:450px;height:450px;background:var(--a2);opacity:.08;bottom:-10%;right:5%;animation-delay:4s}
+.orb3{width:300px;height:300px;background:var(--ok);opacity:.06;top:45%;right:-5%;animation-delay:7s}
+@keyframes float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-28px) scale(1.04)}}
+
+/* ── LAYOUT ── */
+.app{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 20px 100px}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-ico{
+  width:42px;height:42px;border-radius:var(--r2);
+  background:var(--ag2);display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:0 0 24px var(--ag);flex-shrink:0
+}
+.brand-name{font-size:21px;font-weight:800;background:var(--ag2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.5px}
+.brand-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.hdr-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
+  border-radius:var(--r1);font-size:13px;font-weight:500;cursor:pointer;
+  border:1px solid var(--b);background:var(--s2);color:var(--t2);
+  transition:all .2s var(--ease);white-space:nowrap;font-family:inherit
+}
+.btn:hover{background:var(--s3);border-color:var(--bh);color:var(--t1);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--ag2);border-color:transparent;color:#fff;box-shadow:0 0 20px var(--ag)}
+.btn-primary:hover{opacity:.88;color:#fff;box-shadow:0 0 30px var(--ag)}
+.btn-ico{padding:8px;width:36px;height:36px;justify-content:center}
+
+.theme-picker{display:flex;align-items:center;gap:5px;padding:5px;background:var(--s1);border:1px solid var(--b);border-radius:999px}
+.tdot{width:18px;height:18px;border-radius:50%;cursor:pointer;transition:transform .2s var(--esp);border:2px solid transparent}
+.tdot:hover{transform:scale(1.25)}
+.tdot.active{border-color:#fff;box-shadow:0 0 8px var(--ag)}
+.tdot[data-accent="blue"]{background:#4f9eff}
+.tdot[data-accent="purple"]{background:#a855f7}
+.tdot[data-accent="cyan"]{background:#06b6d4}
+.tdot[data-accent="emerald"]{background:#10d984}
+
+/* ── CARD BASE ── */
+.card{
+  background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  padding:22px;transition:border-color .2s,box-shadow .2s
+}
+.card:hover{border-color:var(--bh)}
+
+/* ── ANIMATION ── */
+@keyframes cin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.cin{animation:cin .45s var(--eout) both}
+.d1{animation-delay:.07s}.d2{animation-delay:.14s}.d3{animation-delay:.21s}
+.d4{animation-delay:.28s}.d5{animation-delay:.35s}.d6{animation-delay:.42s}
+
+/* ── HERO MOYENNE ── */
+.hero-card{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px;
+  padding:28px 28px;margin-bottom:18px;
+  background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);
+  backdrop-filter:blur(24px);position:relative;overflow:hidden
+}
+.hero-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 0% 50%,var(--ag) 0%,transparent 60%);
+  opacity:.25;pointer-events:none
+}
+.ring-wrap{position:relative;width:140px;height:140px;flex-shrink:0}
+.ring-svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:9}
+.ring-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .65s var(--eout),stroke .4s}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ring-moy{font-size:30px;font-weight:900;letter-spacing:-1.5px;line-height:1;transition:color .4s}
+.ring-den{font-size:12px;color:var(--t3)}
+.hero-mid{min-width:0}
+.hero-label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:600}
+.hero-val{font-size:48px;font-weight:900;letter-spacing:-2px;line-height:1;background:var(--ag2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;transition:filter .3s}
+.hero-sub{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hero-msg{font-size:13px;color:var(--t2);margin-top:8px;line-height:1.5;max-width:400px}
+.hero-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/* ── STATUS BADGE ── */
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;transition:all .3s}
+.sbadge.passing{background:var(--ok-bg);color:var(--ok)}
+.sbadge.close  {background:var(--warn-bg);color:var(--warn)}
+.sbadge.failing{background:var(--err-bg);color:var(--err)}
+.sbadge.excellent{background:rgba(79,158,255,.12);color:var(--a1)}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.scard{background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);backdrop-filter:blur(24px);padding:18px 20px}
+.scard-lbl{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:6px}
+.scard-val{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;transition:color .3s}
+.scard-sub{font-size:12px;color:var(--t2);margin-top:5px}
+
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-bottom:16px}
+
+/* ── SECTION TITLE ── */
+.sec-ttl{font-size:13px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sec-badge{font-size:10px;padding:2px 8px;border-radius:999px;background:var(--s3);color:var(--t3);font-weight:500}
+
+/* ── FIXED ROWS ── */
+.fixed-row{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:var(--r2);background:var(--s1);border:1px solid var(--b);
+  margin-bottom:7px;opacity:.6;transition:opacity .2s
+}
+.fixed-row:hover{opacity:.85}
+.sub-name{flex:1;font-size:13px;color:var(--t2)}
+.cr-tag{font-size:10px;padding:2px 7px;border-radius:999px;background:var(--s3);color:var(--t3);font-weight:600;flex-shrink:0}
+.gchip{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;min-width:50px;text-align:center;flex-shrink:0}
+.gchip.low{background:var(--err-bg);color:var(--err)}
+.gchip.mid{background:var(--warn-bg);color:var(--warn)}
+.gchip.ok {background:var(--ok-bg);color:var(--ok)}
+
+/* ── FIXED EDIT ── */
+.fixed-row.unlocked{opacity:1;border-color:var(--a1);background:rgba(79,158,255,.05);box-shadow:0 0 0 1px var(--ag)}
+.lock-btn{background:none;border:1px solid var(--b);border-radius:var(--r1);padding:3px 8px;cursor:pointer;font-size:13px;line-height:1;color:var(--t3);transition:all .15s var(--ease);flex-shrink:0;font-family:inherit}
+.lock-btn:hover{background:var(--s3);border-color:var(--bh);transform:scale(1.1)}
+.fixed-inp{width:72px;background:var(--s2);border:1px solid var(--b);border-radius:var(--r1);padding:5px 8px;font-size:14px;font-weight:700;color:var(--t1);font-family:inherit;text-align:center;flex-shrink:0;transition:border-color .2s,box-shadow .2s}
+.fixed-inp:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px var(--ag)}
+.fixed-inp::-webkit-inner-spin-button,.fixed-inp::-webkit-outer-spin-button{opacity:.4}
+
+/* ── SUBJECT CARDS ── */
+.sub-card{
+  padding:14px 16px;border-radius:var(--r2);background:var(--s1);border:1px solid var(--b);
+  margin-bottom:10px;transition:border-color .2s,box-shadow .2s
+}
+.sub-card.drag{border-color:var(--a1);box-shadow:0 0 18px var(--ag)}
+.sub-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sub-info{display:flex;align-items:center;gap:8px;min-width:0}
+.sub-nm{font-size:13px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub-hint{font-size:10px;color:var(--t3);flex-shrink:0}
+.sub-grade{font-size:22px;font-weight:800;letter-spacing:-1px;min-width:52px;text-align:right;transition:color .3s,text-shadow .3s;flex-shrink:0}
+
+/* ── CUSTOM SLIDER ── */
+.slider-wrap{position:relative;padding-top:22px}
+.s-tip{
+  position:absolute;top:0;transform:translateX(-50%);
+  background:var(--a1);color:#fff;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:5px;white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:5
+}
+.s-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--a1)}
+.slider-wrap:hover .s-tip,.slider-wrap.active .s-tip{opacity:1}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;
+  background:rgba(255,255,255,.1)
+}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:#fff;cursor:grab;transition:box-shadow .2s,transform .15s;
+  box-shadow:0 0 0 3px var(--ag),0 2px 6px rgba(0,0,0,.35)
+}
+input[type=range]:active::-webkit-slider-thumb{cursor:grabbing;transform:scale(1.2);box-shadow:0 0 0 6px var(--ag),0 2px 8px rgba(0,0,0,.4)}
+input[type=range]:hover::-webkit-slider-thumb{box-shadow:0 0 0 5px var(--ag),0 2px 6px rgba(0,0,0,.35)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:none;box-shadow:0 0 0 3px var(--ag)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba(255,255,255,.1)}
+
+/* ── RIGHT COLUMN ── */
+.right-col{display:flex;flex-direction:column;gap:14px}
+
+/* ── PREDICTION ── */
+.pred-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);backdrop-filter:blur(24px);padding:20px}
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 0}
+.sc{padding:11px 8px;border-radius:var(--r1);text-align:center;border:1px solid var(--b)}
+.sc.best    {background:rgba(16,217,132,.06);border-color:rgba(16,217,132,.2)}
+.sc.realistic{background:rgba(79,158,255,.06);border-color:rgba(79,158,255,.2)}
+.sc.worst  {background:rgba(244,63,94,.06);border-color:rgba(244,63,94,.2)}
+.sc-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;font-weight:600}
+.sc-val{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.sc.best .sc-val{color:var(--ok)}
+.sc.realistic .sc-val{color:var(--a1)}
+.sc.worst .sc-val{color:var(--err)}
+
+.prob-row{margin:14px 0 4px;display:flex;justify-content:space-between;align-items:center}
+.prob-label{font-size:12px;color:var(--t2)}
+.prob-val{font-size:13px;font-weight:700}
+.pbar{background:rgba(255,255,255,.08);border-radius:999px;height:7px;overflow:hidden;margin-bottom:14px}
+.pbar-fill{height:100%;border-radius:999px;background:var(--ag2);transition:width .5s var(--eout)}
+
+.rec-item{display:flex;align-items:flex-start;gap:7px;padding:7px 10px;border-radius:var(--r1);background:var(--s2);margin-bottom:5px;font-size:11.5px;color:var(--t2);line-height:1.45}
+.rec-ico{flex-shrink:0;font-size:13px;margin-top:1px}
+.recs-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:6px}
+
+/* ── GOAL SIM ── */
+.goal-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);backdrop-filter:blur(24px);padding:20px}
+.goal-row{display:flex;align-items:center;gap:10px;margin:12px 0}
+.goal-inp{
+  width:75px;background:var(--s2);border:1px solid var(--b);border-radius:var(--r1);
+  padding:8px 10px;font-size:18px;font-weight:700;color:var(--t1);font-family:inherit;
+  transition:border-color .2s,box-shadow .2s;text-align:center
+}
+.goal-inp:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px var(--ag)}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.goal-item{padding:12px;border-radius:var(--r1);background:var(--s2);border:1px solid var(--b)}
+.goal-item .gl{font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:500}
+.goal-item .gv{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.goal-msg{margin-top:10px;font-size:12px;color:var(--t2);padding:9px 12px;background:var(--s2);border-radius:var(--r1);line-height:1.45}
+
+/* ── CHARTS ── */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);backdrop-filter:blur(24px);padding:20px}
+.chart-wrap{height:210px;position:relative}
+
+/* ── TARGETS GRID ── */
+.targets-card{background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);backdrop-filter:blur(24px);padding:22px;margin-bottom:20px}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.titem{padding:14px;border-radius:var(--r2);background:var(--s2);border:1px solid var(--b)}
+.titem .tl{font-size:10px;color:var(--t3);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.titem .tv{font-size:22px;font-weight:800;letter-spacing:-1px}
+.titem .ts{font-size:11px;margin-top:3px}
+
+/* ── FLOATING CARD ── */
+.floating{
+  position:fixed;bottom:20px;right:20px;z-index:100;
+  background:var(--bg2);border:1px solid var(--bh);border-radius:var(--r3);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  padding:14px 18px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 0 1px var(--b);
+  animation:cin .5s var(--esp) .5s both;min-width:200px
+}
+.fl-moy{font-size:26px;font-weight:900;letter-spacing:-1.5px;transition:color .3s;line-height:1}
+.fl-lbl{font-size:10px;color:var(--t3);margin-bottom:2px}
+.fl-status{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:76px;right:20px;z-index:200;
+  background:var(--bg2);border:1px solid var(--bh);border-radius:var(--r2);
+  padding:10px 16px;font-size:13px;color:var(--t1);
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:none
+}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ── PROGRESS BAR ── */
+.prgbar{height:5px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px}
+.prgfill{height:100%;border-radius:999px;background:var(--ag2);transition:width .5s var(--eout)}
+
+/* ── UTILS ── */
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600}
+.pill-g{background:var(--ok-bg);color:var(--ok)}
+.pill-a{background:var(--warn-bg);color:var(--warn)}
+.pill-r{background:var(--err-bg);color:var(--err)}
+.pill-b{background:rgba(79,158,255,.12);color:var(--a1)}
+.divider{height:1px;background:var(--b);margin:14px 0}
+
+/* ── LANDING ── */
+.landing{
+  position:fixed;inset:0;z-index:300;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);padding:30px 20px;gap:32px;
+  animation:cin .5s var(--eout) both;
+}
+.landing-exit{animation:landout .38s var(--ease) both!important}
+@keyframes landout{to{opacity:0;transform:scale(.96)}}
+
+.istic-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.istic-emblem{
+  width:90px;height:90px;border-radius:50%;
+  background:var(--s2);border:2px solid var(--ag);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 36px var(--ag),inset 0 0 20px rgba(79,158,255,.08);
+  position:relative;overflow:hidden;
+}
+.istic-emblem::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 10%,rgba(79,158,255,.22) 0%,transparent 65%)
+}
+.istic-letters{
+  font-size:22px;font-weight:900;letter-spacing:2px;
+  color:var(--a1);position:relative;z-index:1;
+  text-shadow:0 0 16px var(--ag)
+}
+.istic-title{font-size:15px;font-weight:700;color:var(--t1)}
+.istic-sub{font-size:10.5px;color:var(--t3);line-height:1.55;max-width:300px}
+
+.landing-divider{width:48px;height:2px;border-radius:999px;background:var(--ag2);opacity:.45}
+
+.landing-brand{display:flex;flex-direction:column;align-items:center;gap:6px}
+.landing-brand-ico{
+  width:52px;height:52px;border-radius:var(--r2);background:var(--ag2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;box-shadow:0 0 28px var(--ag);
+}
+.landing-brand-name{
+  font-size:30px;font-weight:900;letter-spacing:-.8px;
+  background:var(--ag2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text
+}
+.landing-brand-sub{font-size:12px;color:var(--t3)}
+
+.sem-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:460px}
+.sem-card{
+  background:var(--s1);border:1px solid var(--b);border-radius:var(--r3);
+  padding:28px 20px;display:flex;flex-direction:column;align-items:center;
+  gap:8px;cursor:pointer;text-align:center;
+  transition:all .25s var(--esp);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  position:relative;overflow:hidden;
+}
+.sem-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,var(--ag) 0%,transparent 65%);
+  opacity:0;transition:opacity .25s;pointer-events:none
+}
+.sem-card.sem1:hover::after{opacity:.35}
+.sem-card.sem1:hover{border-color:var(--a1);transform:translateY(-4px);box-shadow:0 10px 32px var(--ag)}
+.sem-card.sem2{opacity:.7}
+.sem-card.sem2:hover{border-color:var(--bh);transform:translateY(-2px)}
+.sem-ico{font-size:32px;position:relative;z-index:1}
+.sem-label{font-size:20px;font-weight:900;color:var(--t1);letter-spacing:-.3px;position:relative;z-index:1}
+.sem-desc{font-size:11px;color:var(--t3);position:relative;z-index:1}
+.sem-action{font-size:12px;font-weight:600;color:var(--a1);margin-top:2px;position:relative;z-index:1}
+.sem-cs{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 12px;border-radius:999px;margin-top:4px;
+  background:var(--warn-bg);color:var(--warn);font-size:11px;font-weight:700;
+  position:relative;z-index:1
+}
+
+/* ── COMING SOON OVERLAY ── */
+.cs-overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(7,7,26,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center
+}
+.cs-overlay.show{display:flex;animation:cin .3s var(--eout) both}
+.cs-box{
+  background:var(--bg2);border:1px solid var(--bh);border-radius:var(--r3);
+  padding:42px 36px;text-align:center;max-width:360px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px var(--b)
+}
+.cs-ico{font-size:54px;margin-bottom:14px}
+.cs-ttl{font-size:24px;font-weight:900;color:var(--t1);margin-bottom:8px;letter-spacing:-.4px}
+.cs-msg{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:22px}
+
+@media(max-width:480px){
+  .sem-grid{grid-template-columns:1fr;max-width:280px}
+  .landing{gap:22px;padding:20px 16px}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .main-grid{grid-template-columns:1fr}
+  .hero-card{grid-template-columns:auto 1fr;grid-template-rows:auto auto}
+  .hero-right{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start}
+  .charts-row{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:600px){
+  .app{padding:0 14px 90px}
+  .stats-row{grid-template-columns:1fr}
+  .hero-card{grid-template-columns:1fr;text-align:center}
+  .ring-wrap{margin:0 auto}
+  .hero-right{justify-content:center}
+  .hero-val{font-size:36px}
+  .floating{left:14px;right:14px;min-width:unset}
+  .hdr-actions{gap:5px}
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- LANDING PAGE -->
+<div id="landing" class="landing">
+  <!-- ISTIC Emblem -->
+  <div class="istic-wrap cin">
+    <div class="istic-emblem">
+      <span class="istic-letters">ISTIC</span>
+    </div>
+    <div class="istic-title">ISTIC · Université de Carthage</div>
+    <div class="istic-sub">Institut Supérieur des Technologies de l'Information et de la Communication</div>
+  </div>
+
+  <div class="landing-divider"></div>
+
+  <!-- Brand -->
+  <div class="landing-brand cin d2">
+    <div class="landing-brand-ico">🎓</div>
+    <div class="landing-brand-name">AcademiQ</div>
+    <div class="landing-brand-sub">Tableau de bord des rattrapages</div>
+  </div>
+
+  <!-- Semester Selection -->
+  <div class="sem-grid cin d3">
+    <div class="sem-card sem1" onclick="enterSem1()">
+      <div class="sem-ico">📚</div>
+      <div class="sem-label">SEM 1</div>
+      <div class="sem-desc">Rattrapage 2025–26</div>
+      <div class="sem-action">Accéder →</div>
+    </div>
+    <div class="sem-card sem2" onclick="showComingSoon()">
+      <div class="sem-ico">🔮</div>
+      <div class="sem-label">SEM 2</div>
+      <div class="sem-desc">Semestre 2</div>
+      <div class="sem-cs">⏳ Coming Soon</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMING SOON OVERLAY -->
+<div class="cs-overlay" id="cs-overlay">
+  <div class="cs-box cin">
+    <div class="cs-ico">🔮</div>
+    <div class="cs-ttl">Semestre 2</div>
+    <div class="cs-msg">Le tableau de bord du Semestre 2 sera disponible prochainement.<br><br>Revenez bientôt !</div>
+    <button class="btn btn-primary" onclick="hideComingSoon()" style="margin-top:0">← Retour</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+<!-- HEADER -->
+<header class="hdr cin">
+  <div class="brand">
+    <div class="brand-ico">🎓</div>
+    <div>
+      <div class="brand-name">AcademiQ</div>
+      <div class="brand-sub">Rattrapage Dashboard · S1 2025–26</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <div class="theme-picker" title="Accent color">
+      <div class="tdot active" data-accent="blue"></div>
+      <div class="tdot" data-accent="purple"></div>
+      <div class="tdot" data-accent="cyan"></div>
+      <div class="tdot" data-accent="emerald"></div>
+    </div>
+    <button class="btn btn-ico" id="theme-btn" title="Toggle dark/light (T)">🌙</button>
+    <button class="btn" id="reset-btn" title="Reset (R)">↺ Reset</button>
+    <button class="btn btn-primary" id="export-btn" title="Export screenshot (E)">⬇ Export</button>
+  </div>
+</header>
+
+<!-- HERO CARD -->
+<div class="hero-card cin d1" id="hero-card">
+  <div class="ring-wrap">
+    <svg class="ring-svg" viewBox="0 0 140 140" width="140" height="140">
+      <defs>
+        <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4f9eff"/><stop offset="100%" stop-color="#a855f7"/>
+        </linearGradient>
+      </defs>
+      <circle class="ring-bg" cx="70" cy="70" r="56"/>
+      <circle class="ring-fill" cx="70" cy="70" r="56" id="ring-c"
+        stroke="url(#rg)" stroke-dasharray="351.86" stroke-dashoffset="351.86"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-moy" id="ring-moy">0.00</div>
+      <div class="ring-den">/ 20</div>
+    </div>
+  </div>
+
+  <div class="hero-mid">
+    <div class="hero-label">Moyenne Générale</div>
+    <div class="hero-val" id="hero-val">—</div>
+    <div class="hero-sub">
+      <span class="sbadge failing" id="sbadge">● Calculating</span>
+      <span style="font-size:12px;color:var(--t3)">30 crédits · 6 rattrapages</span>
+    </div>
+    <div class="hero-msg" id="hero-msg">Ajustez les curseurs pour voir votre moyenne projetée.</div>
+  </div>
+
+  <div class="hero-right">
+    <div style="text-align:right">
+      <div style="font-size:10px;color:var(--t3);margin-bottom:2px">Crédits fixes</div>
+      <div style="font-size:16px;font-weight:700;color:var(--t2)" id="fixed-pts-display">— pts</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;color:var(--t3);margin-bottom:2px">Crédits variables</div>
+      <div style="font-size:16px;font-weight:700;color:var(--a1)" id="var-pts">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="scard cin d2">
+    <div class="scard-lbl">Écart à 10</div>
+    <div class="scard-val" id="s-g10">—</div>
+    <div class="scard-sub" id="s-g10-sub">Points nécessaires</div>
+  </div>
+  <div class="scard cin d3">
+    <div class="scard-lbl">Écart à 12</div>
+    <div class="scard-val" id="s-g12">—</div>
+    <div class="scard-sub" id="s-g12-sub">Points nécessaires</div>
+  </div>
+  <div class="scard cin d4">
+    <div class="scard-lbl">Moyenne Rattrapages</div>
+    <div class="scard-val" id="s-ravg" style="color:var(--a1)">—</div>
+    <div class="scard-sub">6 matières variables</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+  <!-- LEFT -->
+  <div>
+    <!-- Fixed -->
+    <div class="card cin d2" style="margin-bottom:14px">
+      <div class="sec-ttl">🔒 Notes Fixes
+        <span class="sec-badge">🔓 déverrouillez pour éditer</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--t3)" id="fixed-contrib-lbl">Contribution: — pts</span>
+      </div>
+      <div id="fixed-container"></div>
+    </div>
+
+    <!-- Retake -->
+    <div class="card cin d3">
+      <div class="sec-ttl">✏️ Matières à Rattraper <span class="sec-badge">6 matières</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--t3)" id="var-avg-lbl">Moy. —</span>
+      </div>
+      <div id="subs-container"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-col">
+    <!-- Prediction -->
+    <div class="pred-card cin d2">
+      <div class="sec-ttl">🔮 Prédiction Intelligente</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:10px">Basée sur vos notes actuelles</div>
+
+      <div class="prob-row">
+        <span class="prob-label">Probabilité de réussite</span>
+        <span class="prob-val" id="prob-val">—</span>
+      </div>
+      <div class="pbar"><div class="pbar-fill" id="prob-bar" style="width:0%"></div></div>
+
+      <div class="scenarios">
+        <div class="sc best"><div class="sc-lbl">Best Case</div><div class="sc-val" id="sc-best">—</div></div>
+        <div class="sc realistic"><div class="sc-lbl">Réaliste</div><div class="sc-val" id="sc-real">—</div></div>
+        <div class="sc worst"><div class="sc-lbl">Worst Case</div><div class="sc-val" id="sc-worst">—</div></div>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="recs-lbl">Recommandations IA</div>
+        <div id="recs-container"></div>
+      </div>
+    </div>
+
+    <!-- Goal Simulator -->
+    <div class="goal-card cin d3">
+      <div class="sec-ttl">🎯 Simulateur d'Objectif</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:4px">Fixez votre cible, calculez l'effort requis</div>
+      <div class="goal-row">
+        <span style="font-size:13px;color:var(--t2)">Cible</span>
+        <input type="number" class="goal-inp" id="goal-inp" min="0" max="20" step="0.5" value="10">
+        <span style="font-size:13px;color:var(--t3)">/ 20</span>
+      </div>
+      <div class="goal-grid">
+        <div class="goal-item">
+          <div class="gl">Moyenne requise (5 autres)</div>
+          <div class="gv" id="goal-need">—</div>
+        </div>
+        <div class="goal-item">
+          <div class="gl">En bonne voie</div>
+          <div class="gv" id="goal-track">—</div>
+        </div>
+      </div>
+      <div class="goal-msg" id="goal-msg">Ajustez la cible pour voir ce qu'il vous faut.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-row">
+  <div class="chart-card cin d4">
+    <div class="sec-ttl" style="margin-bottom:12px">📡 Radar de Performance</div>
+    <div class="chart-wrap"><canvas id="radarC"></canvas></div>
+  </div>
+  <div class="chart-card cin d5">
+    <div class="sec-ttl" style="margin-bottom:12px">📊 Notes vs Crédits</div>
+    <div class="chart-wrap"><canvas id="barC"></canvas></div>
+  </div>
+</div>
+
+<!-- TARGETS -->
+<div class="targets-card cin d5">
+  <div class="sec-ttl">📋 Notes Requises par Objectif</div>
+  <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:2px">Moyenne nécessaire dans les 5 autres matières de rattrapage (hors Analyse 1)</div>
+  <div class="tgrid" id="tgrid"></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- FLOATING SUMMARY -->
+<div class="floating" id="floating">
+  <div>
+    <div class="fl-lbl">Moyenne</div>
+    <div class="fl-moy" id="fl-moy">—</div>
+  </div>
+  <div style="flex:1">
+    <div class="fl-status failing" id="fl-status">—</div>
+    <div style="font-size:10px;color:var(--t3);margin-top:4px" id="fl-sub">—</div>
+  </div>
+  <button class="btn btn-ico" onclick="doExport()" title="Screenshot">📷</button>
+</div>
+
+<!-- LIBRARIES -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+// ── DATA ──────────────────────────────────────────────
+const FIXED_META = [
+  {name:'Atelier de Prog 1',     defGrade:0.00, cr:3},
+  {name:'Algo et Structure',     defGrade:0.00,cr:4},
+  {name:'Anglais 1',             defGrade:0.00, cr:2},
+  {name:'Tech de Communication', defGrade:0.00, cr:2}
+];
+const SUBS = [
+  {name:'Analyse 1',                  cr:3, def:0.00,  max:20,  hint:'(max ~7)'},
+  {name:'Algèbre 1',                  cr:3, def:0.00, max:20},
+  {name:'Électricité Électronique',   cr:4, def:0.00, max:20},
+  {name:'Propagation et Rayonnement', cr:2, def:0.00, max:20},
+  {name:"Sys d'Exploitation 1",       cr:4, def:0.00, max:20},
+  {name:'Système Logique',            cr:3, def:0.00, max:20}
+];
+const TOTAL_CR = 30;
+const OTHER5_CR = SUBS.slice(1).reduce((s,x)=>s+x.cr,0); // 16
+
+// ── MUTABLE FIXED STATE ───────────────────────────────
+let fixedGrades = (() => {
+  try { const v=JSON.parse(localStorage.getItem('aq_fixed')); if(Array.isArray(v)&&v.length===FIXED_META.length) return v; } catch(e){}
+  return FIXED_META.map(f=>f.defGrade);
+})();
+let fixedLocked = (() => {
+  try { const v=JSON.parse(localStorage.getItem('aq_locked')); if(Array.isArray(v)&&v.length===FIXED_META.length) return v; } catch(e){}
+  return FIXED_META.map(()=>true);
+})();
+function getFixedContrib(){ return fixedGrades.reduce((s,g,i)=>s+g*FIXED_META[i].cr,0); }
+
+// ── STATE ─────────────────────────────────────────────
+let grades = (() => {
+  try { const v = JSON.parse(localStorage.getItem('aq_grades')); if(Array.isArray(v)&&v.length===SUBS.length) return v; } catch(e){}
+  return SUBS.map(s=>s.def);
+})();
+
+let radarChart = null, barChart = null;
+let prevMoy = 0;
+const anims = {};
+
+// ── MATH ──────────────────────────────────────────────
+function calcMoy(g) {
+  return (getFixedContrib() + g.reduce((s,v,i)=>s+v*SUBS[i].cr,0)) / TOTAL_CR;
+}
+function neededFor(target) {
+  return (target*TOTAL_CR - getFixedContrib() - grades[0]*SUBS[0].cr) / OTHER5_CR;
+}
+
+// ── BUILD FIXED ───────────────────────────────────────
+function buildFixed() {
+  const c = document.getElementById('fixed-container');
+  c.innerHTML = '';
+  FIXED_META.forEach((meta,i) => {
+    const locked = fixedLocked[i];
+    const g = fixedGrades[i];
+    const chipCls = g>=10?'ok':g>=7?'mid':'low';
+    const row = document.createElement('div');
+    row.className = `fixed-row${locked?'':' unlocked'}`;
+    row.id = `fr${i}`;
+    row.innerHTML = `
+      <span class="sub-name">${meta.name}</span>
+      <span class="cr-tag">Cr ${meta.cr}</span>
+      <button class="lock-btn" onclick="toggleLock(${i})" title="${locked?'Déverrouiller pour éditer':'Verrouiller'}">${locked?'🔒':'🔓'}</button>
+      ${locked
+        ? `<span class="gchip ${chipCls}">${g.toFixed(2)}</span>`
+        : `<input type="number" class="fixed-inp" min="0" max="20" step="0.25" value="${g}" oninput="onFixed(${i},this.value)" onfocus="this.select()">`
+      }`;
+    c.appendChild(row);
+  });
+  updateFixedContribDisplay();
+}
+
+function toggleLock(i) {
+  fixedLocked[i] = !fixedLocked[i];
+  saveFixed();
+  buildFixed();
+  updateAll();
+}
+
+function onFixed(i, val) {
+  const v = parseFloat(val);
+  if(isNaN(v)) return;
+  fixedGrades[i] = Math.min(20, Math.max(0, v));
+  saveFixed();
+  updateAll();
+}
+
+function saveFixed() {
+  try {
+    localStorage.setItem('aq_fixed',  JSON.stringify(fixedGrades));
+    localStorage.setItem('aq_locked', JSON.stringify(fixedLocked));
+  } catch(e){}
+}
+
+function updateFixedContribDisplay() {
+  const c = getFixedContrib();
+  const lbl = document.getElementById('fixed-contrib-lbl');
+  if(lbl) lbl.textContent = `Contribution: ${c.toFixed(2)} pts`;
+  const pts = document.getElementById('fixed-pts-display');
+  if(pts) pts.textContent = c.toFixed(2)+' pts';
+}
+
+// ── BUILD SUBJECTS ────────────────────────────────────
+function buildSubs() {
+  const c = document.getElementById('subs-container');
+  c.innerHTML = '';
+  SUBS.forEach((sub,i) => {
+    const d = document.createElement('div');
+    d.className = 'sub-card cin';
+    d.id = `sc${i}`;
+    d.style.animationDelay = `${.05*i+.25}s`;
+    d.innerHTML = `
+      <div class="sub-hdr">
+        <div class="sub-info">
+          <span class="sub-nm">${sub.name}</span>
+          ${sub.hint?`<span class="sub-hint">${sub.hint}</span>`:''}
+          <span class="cr-tag">Cr ${sub.cr}</span>
+        </div>
+        <div class="sub-grade" id="sg${i}">${grades[i].toFixed(1)}</div>
+      </div>
+      <div class="slider-wrap" id="sw${i}">
+        <div class="s-tip" id="st${i}">${grades[i].toFixed(1)}</div>
+        <input type="range" min="0" max="${sub.max}" step="0.5" value="${grades[i]}" id="sr${i}">
+      </div>`;
+    c.appendChild(d);
+    const sl = d.querySelector(`#sr${i}`);
+    sl.addEventListener('input', ()=>onSlide(i,sl));
+    sl.addEventListener('mousedown',()=>{d.classList.add('drag');document.getElementById(`sw${i}`).classList.add('active')});
+    sl.addEventListener('mouseup',()=>{d.classList.remove('drag');document.getElementById(`sw${i}`).classList.remove('active')});
+    sl.addEventListener('touchstart',()=>{d.classList.add('drag');document.getElementById(`sw${i}`).classList.add('active')},{passive:true});
+    sl.addEventListener('touchend',()=>{d.classList.remove('drag');document.getElementById(`sw${i}`).classList.remove('active')});
+    updateFill(sl, sub.max);
+    colorGrade(i);
+  });
+}
+
+function updateFill(sl, maxVal) {
+  const pct = (parseFloat(sl.value)/maxVal)*100;
+  sl.style.background = `linear-gradient(to right,var(--a1) 0%,var(--a2) ${pct}%,rgba(255,255,255,.1) ${pct}%)`;
+  const i = parseInt(sl.id.replace('sr',''));
+  const tip = document.getElementById(`st${i}`);
+  if(tip){ tip.textContent=parseFloat(sl.value).toFixed(1); tip.style.left=`calc(${pct}% + ${(50-pct)*.1}px)`; }
+}
+
+function onSlide(i, sl) {
+  grades[i] = parseFloat(sl.value);
+  try { localStorage.setItem('aq_grades', JSON.stringify(grades)); } catch(e){}
+  document.getElementById(`sg${i}`).textContent = grades[i].toFixed(1);
+  updateFill(sl, SUBS[i].max);
+  colorGrade(i);
+  updateAll();
+}
+
+function colorGrade(i) {
+  const el = document.getElementById(`sg${i}`);
+  const g = grades[i];
+  if(g>=14){el.style.color='var(--ok)';el.style.textShadow='0 0 16px var(--ok)'}
+  else if(g>=10){el.style.color='var(--a1)';el.style.textShadow='0 0 12px var(--ag)'}
+  else if(g>=7){el.style.color='var(--warn)';el.style.textShadow='none'}
+  else{el.style.color='var(--err)';el.style.textShadow='none'}
+}
+
+// ── ANIMATE NUMBER ────────────────────────────────────
+function animNum(el, to, dec=2, dur=280) {
+  const id = el.id||'x';
+  if(anims[id]) cancelAnimationFrame(anims[id]);
+  const from = parseFloat(el.textContent)||0;
+  const diff = to-from;
+  const t0 = performance.now();
+  function step(now){
+    const p = Math.min((now-t0)/dur,1);
+    const e = 1-Math.pow(1-p,3);
+    el.textContent=(from+diff*e).toFixed(dec);
+    if(p<1) anims[id]=requestAnimationFrame(step);
+    else el.textContent=to.toFixed(dec);
+  }
+  anims[id]=requestAnimationFrame(step);
+}
+
+// ── UPDATE ALL ────────────────────────────────────────
+function updateAll() {
+  const moy = calcMoy(grades);
+
+  // Ring
+  const circ = 351.86; // 2π×56
+  document.getElementById('ring-c').style.strokeDashoffset = Math.max(0,circ*(1-moy/20));
+  document.getElementById('ring-c').style.stroke = gradeColor(moy);
+  document.getElementById('ring-moy').style.color = gradeColor(moy);
+
+  // Hero value
+  const hv = document.getElementById('hero-val');
+  animNum(hv, moy, 2);
+  document.getElementById('ring-moy').textContent = moy.toFixed(2);
+  prevMoy = moy;
+
+  // Fixed contrib display
+  updateFixedContribDisplay();
+
+  // Variable points
+  const vPts = grades.reduce((s,v,i)=>s+v*SUBS[i].cr,0);
+  document.getElementById('var-pts').textContent = vPts.toFixed(2)+' pts';
+  const rAvg = grades.reduce((s,v)=>s+v,0)/grades.length;
+  document.getElementById('var-avg-lbl').textContent = `Moy. ${rAvg.toFixed(1)}`;
+  document.getElementById('s-ravg').textContent = rAvg.toFixed(2);
+  document.getElementById('s-ravg').style.color = gradeColor(rAvg);
+
+  // Gaps
+  const g10 = 10-moy, g12 = 12-moy;
+  const g10el = document.getElementById('s-g10');
+  if(g10<=0){g10el.textContent='✓';g10el.style.color='var(--ok)';document.getElementById('s-g10-sub').innerHTML='<span class="pill pill-g">Atteint</span>';}
+  else{g10el.textContent='+'+g10.toFixed(2);g10el.style.color='var(--warn)';document.getElementById('s-g10-sub').textContent='points manquants';}
+  const g12el = document.getElementById('s-g12');
+  if(g12<=0){g12el.textContent='✓';g12el.style.color='var(--ok)';document.getElementById('s-g12-sub').innerHTML='<span class="pill pill-g">Atteint</span>';}
+  else{g12el.textContent='+'+g12.toFixed(2);g12el.style.color=g12<2?'var(--warn)':'var(--err)';document.getElementById('s-g12-sub').textContent='points manquants';}
+
+  // Status
+  updateStatus(moy);
+  // Prediction
+  updatePred(moy);
+  // Goal
+  updateGoal();
+  // Charts
+  updateCharts();
+  // Targets
+  updateTargets(moy);
+  // Floating
+  const flm = document.getElementById('fl-moy');
+  flm.textContent = moy.toFixed(2);
+  flm.style.color = gradeColor(moy);
+  const fls = document.getElementById('fl-status');
+  fls.textContent = statusText(moy);
+  fls.className = `fl-status ${statusClass(moy)}`;
+  document.getElementById('fl-sub').textContent = `${TOTAL_CR} crédits · rattrapage S1`;
+}
+
+function gradeColor(v){
+  if(v>=14) return 'var(--ok)';
+  if(v>=12) return 'var(--ok)';
+  if(v>=10) return 'var(--a1)';
+  if(v>=8)  return 'var(--warn)';
+  return 'var(--err)';
+}
+function statusClass(v){
+  if(v>=14) return 'excellent';
+  if(v>=10) return 'passing';
+  if(v>=8)  return 'close';
+  return 'failing';
+}
+function statusText(v){
+  if(v>=16) return 'Exceptionnel';
+  if(v>=14) return 'Très Bien';
+  if(v>=12) return 'Bien';
+  if(v>=10) return 'Admis';
+  if(v>=8)  return 'Proche';
+  return 'Insuffisant';
+}
+
+const MSGS = {
+  excellent:["Performance exceptionnelle ! Vous êtes en tête de classe.","Incroyable ! Continuez sur cette lancée."],
+  passing:  ["Vous êtes admis — visez maintenant la mention Bien (12)!","Bon travail. Un effort supplémentaire et vous atteignez 12."],
+  close:    ["Si proche ! Un bon rattrapage peut tout changer.","Vous êtes à la limite. Concentrez-vous sur les matières à fort coefficient."],
+  failing:  ["Ne lâchez pas — maximisez chaque matière de rattrapage.","Chaque point compte. Ciblez Électricité et Sys d'Exploitation."]
+};
+let lastSC = '';
+
+function updateStatus(moy) {
+  const sc = statusClass(moy);
+  const sb = document.getElementById('sbadge');
+  if(sc!==lastSC){
+    sb.className=`sbadge ${sc}`;
+    sb.innerHTML=`● ${statusText(moy)}`;
+    const msgs = MSGS[sc]||MSGS.failing;
+    document.getElementById('hero-msg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    lastSC=sc;
+  } else {
+    sb.className=`sbadge ${sc}`;
+    sb.innerHTML=`● ${statusText(moy)}`;
+  }
+}
+
+// ── PREDICTION ────────────────────────────────────────
+function updatePred(moy) {
+  const bestG = SUBS.map(s=>s.max);
+  const worstG = SUBS.map(()=>4);
+  const best  = calcMoy(bestG);
+  const worst = calcMoy(worstG);
+
+  document.getElementById('sc-best').textContent  = best.toFixed(1);
+  document.getElementById('sc-real').textContent  = moy.toFixed(2);
+  document.getElementById('sc-worst').textContent = worst.toFixed(1);
+
+  const prob = moy>=10?100:Math.max(0,Math.min(99,Math.round(((moy-worst)/(10-worst))*100)));
+  document.getElementById('prob-val').textContent = prob+'%';
+  document.getElementById('prob-bar').style.width = prob+'%';
+  document.getElementById('prob-val').style.color = prob>=70?'var(--ok)':prob>=40?'var(--warn)':'var(--err)';
+
+  // AI recs
+  const recs = genRecs(moy);
+  document.getElementById('recs-container').innerHTML = recs.map(r=>`
+    <div class="rec-item"><span class="rec-ico">${r.ico}</span><span>${r.txt}</span></div>`).join('');
+}
+
+function genRecs(moy) {
+  const recs = [];
+  const minI = grades.indexOf(Math.min(...grades));
+  const maxCrI = SUBS.reduce((b,s,i)=>s.cr>SUBS[b].cr?i:b,0);
+  if(moy<10){
+    recs.push({ico:'⚡',txt:`Priorité : ${SUBS[maxCrI].name} (${SUBS[maxCrI].cr} cr) — coefficient le plus élevé`});
+    const n=neededFor(10);
+    recs.push({ico:'🎯',txt: n<=20?`Il vous faut ${n.toFixed(1)} de moyenne dans les 5 autres matières pour atteindre 10`:'Atteindre 10 est très difficile — maximisez chaque note'});
+    recs.push({ico:'💡',txt:`${SUBS[minI].name} est votre point faible (${grades[minI].toFixed(1)}) — améliorez-la si possible`});
+  } else if(moy<12){
+    recs.push({ico:'✅',txt:'Vous êtes admis — excellent travail !'});
+    const n12=neededFor(12);
+    if(n12<=20) recs.push({ico:'🚀',txt:`Pour la mention Bien, il faut ${n12.toFixed(1)} moy. dans les 5 autres matières`});
+    recs.push({ico:'📈',txt:`Boostez ${SUBS[minI].name} pour améliorer votre classement`});
+  } else {
+    recs.push({ico:'🏆',txt:'Excellent ! Vous obtenez la mention Bien ou mieux'});
+    recs.push({ico:'⭐',txt:'Maintenez ces performances dans toutes les matières'});
+    recs.push({ico:'🎓',txt:'Vous êtes bien préparé pour le semestre suivant'});
+  }
+  return recs.slice(0,3);
+}
+
+// ── GOAL ──────────────────────────────────────────────
+function updateGoal() {
+  const target = parseFloat(document.getElementById('goal-inp').value)||10;
+  const needed = neededFor(target);
+  const moy = calcMoy(grades);
+  const ne = document.getElementById('goal-need');
+  if(needed<=0){ne.textContent='Déjà ✓';ne.style.color='var(--ok)';}
+  else if(needed>20){ne.textContent='>20 ✗';ne.style.color='var(--err)';}
+  else{ne.textContent=needed.toFixed(2);ne.style.color=needed>15?'var(--warn)':'var(--ok)';}
+  const te=document.getElementById('goal-track');
+  te.textContent=moy>=target?'✓ Oui':'✗ Non';
+  te.style.color=moy>=target?'var(--ok)':'var(--err)';
+  const msg=document.getElementById('goal-msg');
+  if(needed<=0) msg.textContent=`Félicitations ! Vous avez déjà atteint votre objectif de ${target}/20 🎉`;
+  else if(needed>20) msg.textContent=`Atteindre ${target}/20 est mathématiquement impossible avec la note actuelle d'Analyse 1. Essayez un objectif plus bas.`;
+  else msg.textContent=`Pour atteindre ${target}/20, vous avez besoin d'une moyenne de ${needed.toFixed(2)} dans Algèbre, Électricité, Propagation, Sys Exp. et Sys Logique.`;
+}
+
+// ── TARGETS ───────────────────────────────────────────
+function updateTargets(moy) {
+  const targets = [9,10,11,12,13,14];
+  document.getElementById('tgrid').innerHTML = targets.map(t=>{
+    const n=neededFor(t);
+    const reached=moy>=t;
+    let col,label;
+    if(reached){col='var(--ok)';label='Atteint ✓';}
+    else if(n<=0){col='var(--ok)';label='Déjà ok';}
+    else if(n>20){col='var(--err)';label='Impossible';}
+    else{col=n>15?'var(--warn)':'var(--a1)';label=`${n.toFixed(2)} moy. requise`;}
+    const disp=reached?'✓':n>20?'✗':n<=0?'✓':n.toFixed(1);
+    return `<div class="titem">
+      <div class="tl">Objectif ${t}/20</div>
+      <div class="tv" style="color:${col}">${disp}</div>
+      <div class="ts" style="color:${col};opacity:.7">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── CHARTS ────────────────────────────────────────────
+const CHART_DEFAULTS = {
+  plugins:{legend:{display:false}},
+  responsive:true,maintainAspectRatio:false,
+  animation:{duration:300}
+};
+
+function initCharts() {
+  try {
+    const rCtx = document.getElementById('radarC').getContext('2d');
+    radarChart = new Chart(rCtx,{
+      type:'radar',
+      data:{
+        labels:SUBS.map(s=>s.name.length>15?s.name.slice(0,13)+'…':s.name),
+        datasets:[{
+          label:'Note',data:grades,
+          backgroundColor:'rgba(79,158,255,.12)',
+          borderColor:'rgba(79,158,255,.8)',borderWidth:2,
+          pointBackgroundColor:'#4f9eff',pointRadius:4,pointHoverRadius:6
+        }]
+      },
+      options:{...CHART_DEFAULTS,scales:{r:{
+        min:0,max:20,ticks:{color:'#475569',backdropColor:'transparent',stepSize:5},
+        grid:{color:'rgba(255,255,255,.06)'},
+        pointLabels:{color:'#94a3b8',font:{size:10,family:'Inter'}},
+        angleLines:{color:'rgba(255,255,255,.06)'}
+      }},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.r.toFixed(1)}/20`}}}}
+    });
+
+    const refLine = {
+      id:'refLine',
+      beforeDraw(chart){
+        const{ctx,chartArea:{top,bottom,left,right},scales:{y}}=chart;
+        if(!y) return;
+        const yPos=y.getPixelForValue(10);
+        ctx.save();ctx.beginPath();
+        ctx.strokeStyle='rgba(245,158,11,.4)';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+        ctx.moveTo(left,yPos);ctx.lineTo(right,yPos);ctx.stroke();
+        ctx.fillStyle='rgba(245,158,11,.7)';ctx.font='10px Inter';
+        ctx.fillText('10',left+4,yPos-4);
+        ctx.restore();
+      }
+    };
+
+    const bCtx = document.getElementById('barC').getContext('2d');
+    barChart = new Chart(bCtx,{
+      type:'bar',
+      data:{
+        labels:[
+          ...FIXED_META.map(f=>f.name.split(' ').slice(0,2).join(' ')),
+          ...SUBS.map(s=>s.name.split(' ').slice(0,2).join(' '))
+        ],
+        datasets:[{
+          label:'Note',
+          data:[...fixedGrades,...grades],
+          backgroundColor:[
+            ...fixedGrades.map((_,i)=>fixedLocked[i]?'rgba(148,163,184,.25)':'rgba(79,158,255,.4)'),
+            ...grades.map(g=>g>=12?'rgba(16,217,132,.55)':g>=10?'rgba(79,158,255,.55)':g>=7?'rgba(245,158,11,.55)':'rgba(244,63,94,.55)')
+          ],
+          borderRadius:5,borderSkipped:false
+        }]
+      },
+      options:{...CHART_DEFAULTS,
+        plugins:{...CHART_DEFAULTS.plugins,tooltip:{callbacks:{
+          afterBody:items=>`Crédits: ${items[0].dataIndex<FIXED_META.length?FIXED_META[items[0].dataIndex].cr:SUBS[items[0].dataIndex-FIXED_META.length].cr}`
+        }}},
+        scales:{
+          x:{ticks:{color:'#475569',font:{size:9,family:'Inter'}},grid:{color:'rgba(255,255,255,.04)'}},
+          y:{min:0,max:20,ticks:{color:'#475569',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'}}
+        }
+      },
+      plugins:[refLine]
+    });
+  } catch(e){ console.warn('Chart init failed:',e); }
+}
+
+function updateCharts() {
+  if(!radarChart||!barChart) return;
+  radarChart.data.datasets[0].data=[...grades];
+  radarChart.update();
+  barChart.data.datasets[0].data=[...fixedGrades,...grades];
+  barChart.data.datasets[0].backgroundColor=[
+    ...fixedGrades.map((_,i)=>fixedLocked[i]?'rgba(148,163,184,.25)':'rgba(79,158,255,.4)'),
+    ...grades.map(g=>g>=12?'rgba(16,217,132,.55)':g>=10?'rgba(79,158,255,.55)':g>=7?'rgba(245,158,11,.55)':'rgba(244,63,94,.55)')
+  ];
+  barChart.update();
+}
+
+// ── THEME ─────────────────────────────────────────────
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('theme-btn').textContent=t==='dark'?'🌙':'☀️';
+  try{localStorage.setItem('aq_theme',t);}catch(e){}
+}
+function setAccent(a){
+  document.documentElement.setAttribute('data-accent',a);
+  document.querySelectorAll('.tdot').forEach(d=>d.classList.remove('active'));
+  document.querySelector(`.tdot[data-accent="${a}"]`).classList.add('active');
+  try{localStorage.setItem('aq_accent',a);}catch(e){}
+  // Re-apply slider fills after accent change
+  SUBS.forEach((_,i)=>{const sl=document.getElementById(`sr${i}`);if(sl) updateFill(sl,SUBS[i].max);});
+}
+
+// ── EXPORT ────────────────────────────────────────────
+async function doExport(){
+  toast('📸 Capture en cours…');
+  try{
+    const bg=document.documentElement.getAttribute('data-theme')==='dark'?'#07071a':'#f0f4ff';
+    const cv=await html2canvas(document.querySelector('.app'),{backgroundColor:bg,scale:2,useCORS:true,logging:false});
+    const a=document.createElement('a');
+    a.download=`AcademiQ_${new Date().toISOString().slice(0,10)}.png`;
+    a.href=cv.toDataURL('image/png');a.click();
+    toast('✅ Capture enregistrée !');
+  } catch(e){ toast('❌ Export échoué : '+e.message); }
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ── RESET ─────────────────────────────────────────────
+function doReset(){
+  grades=SUBS.map(s=>s.def);
+  fixedGrades=FIXED_META.map(f=>f.defGrade);
+  fixedLocked=FIXED_META.map(()=>true);
+  try{localStorage.setItem('aq_grades',JSON.stringify(grades));}catch(e){}
+  saveFixed();
+  buildFixed();
+  SUBS.forEach((_,i)=>{
+    const sl=document.getElementById(`sr${i}`);
+    if(!sl) return;
+    sl.value=SUBS[i].def;
+    updateFill(sl,SUBS[i].max);
+    document.getElementById(`sg${i}`).textContent=SUBS[i].def.toFixed(1);
+    colorGrade(i);
+  });
+  updateAll();
+  toast('↺ Valeurs réinitialisées');
+}
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input')) return;
+  if(e.key==='t') setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+  if(e.key==='r') doReset();
+  if(e.key==='e') doExport();
+  if(e.key==='1') setAccent('blue');
+  if(e.key==='2') setAccent('purple');
+  if(e.key==='3') setAccent('cyan');
+  if(e.key==='4') setAccent('emerald');
+});
+
+// ── LANDING ───────────────────────────────────────────
+function enterSem1() {
+  const l = document.getElementById('landing');
+  l.classList.add('landing-exit');
+  setTimeout(()=>{ l.style.display='none'; }, 380);
+}
+function showComingSoon() {
+  document.getElementById('cs-overlay').classList.add('show');
+}
+function hideComingSoon() {
+  document.getElementById('cs-overlay').classList.remove('show');
+}
+
+// ── INIT ──────────────────────────────────────────────
+function init(){
+  // Restore preferences
+  const th=localStorage.getItem('aq_theme')||'dark';
+  const ac=localStorage.getItem('aq_accent')||'blue';
+  setTheme(th); setAccent(ac);
+
+  // Build UI
+  buildFixed();
+  buildSubs();
+
+  // Events
+  document.getElementById('theme-btn').addEventListener('click',()=>{
+    const cur=document.documentElement.getAttribute('data-theme');
+    setTheme(cur==='dark'?'light':'dark');
+  });
+  document.getElementById('reset-btn').addEventListener('click',doReset);
+  document.getElementById('export-btn').addEventListener('click',doExport);
+  document.querySelectorAll('.tdot').forEach(d=>d.addEventListener('click',()=>setAccent(d.dataset.accent)));
+  document.getElementById('goal-inp').addEventListener('input',updateGoal);
+
+  // Charts + first render
+  setTimeout(()=>{ initCharts(); updateAll(); }, 120);
+}
+
+init();
+</script>
+</body>
+</html>
