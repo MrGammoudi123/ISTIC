@@ -179,7 +179,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .sub-info{display:flex;align-items:center;gap:8px;min-width:0}
 .sub-nm{font-size:13px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub-hint{font-size:10px;color:var(--t3);flex-shrink:0}
-.sub-grade{font-size:22px;font-weight:800;letter-spacing:-1px;min-width:52px;text-align:right;transition:color .3s,text-shadow .3s;flex-shrink:0}
+.sub-grade{
+  font-size:22px;font-weight:800;letter-spacing:-1px;width:64px;text-align:right;
+  transition:color .3s,text-shadow .3s;flex-shrink:0;
+  background:none;border:none;border-bottom:1.5px solid transparent;outline:none;
+  padding:0;font-family:inherit;cursor:default;color:inherit;
+  -moz-appearance:textfield;
+}
+.sub-grade::-webkit-outer-spin-button,.sub-grade::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sub-grade:focus{cursor:text;border-bottom-color:var(--a1)}
 
 /* ── CUSTOM SLIDER ── */
 .slider-wrap{position:relative;padding-top:22px}
@@ -460,8 +468,10 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
   border-color:var(--a1);transform:translateY(-6px);
   box-shadow:0 18px 44px var(--ag),0 0 0 1px rgba(79,158,255,.3);
 }
-.sem-card.sem2{opacity:.58}
-.sem-card.sem2:hover{opacity:.82;transform:translateY(-2px);border-color:var(--bh)}
+.sem-card.sem2:hover{
+  border-color:var(--a2);transform:translateY(-6px);
+  box-shadow:0 18px 44px rgba(168,85,247,.25),0 0 0 1px rgba(168,85,247,.3);
+}
 
 /* Icon container */
 .sem-ico-wrap{
@@ -471,7 +481,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
   border:1px solid var(--b);
 }
 .sem-card.sem1 .sem-ico-wrap{background:rgba(79,158,255,.08);border-color:rgba(79,158,255,.18)}
-.sem-card.sem2 .sem-ico-wrap{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.14)}
+.sem-card.sem2 .sem-ico-wrap{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.18)}
 .sem-card:hover .sem-ico-wrap{transform:scale(1.12) rotate(-5deg);box-shadow:0 8px 22px var(--ag)}
 
 .sem-label{font-size:17px;font-weight:800;color:var(--t1);letter-spacing:-.2px;position:relative;z-index:1}
@@ -484,6 +494,8 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
   transition:all .22s;
 }
 .sem-card.sem1:hover .sem-action{background:rgba(79,158,255,.18);border-color:rgba(79,158,255,.4);gap:8px}
+.sem-card.sem2 .sem-action{background:rgba(168,85,247,.09);border-color:rgba(168,85,247,.22);color:var(--a2)}
+.sem-card.sem2:hover .sem-action{background:rgba(168,85,247,.18);border-color:rgba(168,85,247,.4);gap:8px}
 .sem-cs{
   display:inline-flex;align-items:center;gap:4px;position:relative;z-index:1;
   padding:4px 11px;border-radius:999px;margin-top:3px;
@@ -616,11 +628,11 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
       <div class="sem-desc">Rattrapage 2025–26</div>
       <div class="sem-action">Accéder →</div>
     </div>
-    <div class="sem-card sem2" onclick="showComingSoon()">
-      <div class="sem-ico-wrap">🔮</div>
+    <div class="sem-card sem2" onclick="enterSem2()">
+      <div class="sem-ico-wrap">📖</div>
       <div class="sem-label">Semestre 2</div>
-      <div class="sem-desc">Prochainement</div>
-      <div class="sem-cs">⏳ Coming Soon</div>
+      <div class="sem-desc">Rattrapage 2025–26</div>
+      <div class="sem-action">Accéder →</div>
     </div>
   </div>
 
@@ -649,10 +661,11 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
     <div class="brand-ico">🎓</div>
     <div>
       <div class="brand-name">AcademiQ</div>
-      <div class="brand-sub">Rattrapage Dashboard · S1 2025–26</div>
+      <div class="brand-sub" id="brand-sub">Rattrapage Dashboard · S1 2025–26</div>
     </div>
   </div>
   <div class="hdr-actions">
+    <button class="btn" id="back-btn" onclick="location.reload()" style="display:none">← Semestres</button>
     <div class="theme-picker" title="Accent color">
       <div class="tdot active" data-accent="blue"></div>
       <div class="tdot" data-accent="purple"></div>
@@ -689,7 +702,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
     <div class="hero-val" id="hero-val">—</div>
     <div class="hero-sub">
       <span class="sbadge failing" id="sbadge">● Calculating</span>
-      <span style="font-size:12px;color:var(--t3)">30 crédits · 7 rattrapages</span>
+      <span style="font-size:12px;color:var(--t3)" id="hero-credits">30 crédits · 7 rattrapages</span>
     </div>
     <div class="hero-msg" id="hero-msg">Ajustez les curseurs pour voir votre moyenne projetée.</div>
   </div>
@@ -721,7 +734,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
   <div class="scard cin d4">
     <div class="scard-lbl">Moyenne Rattrapages</div>
     <div class="scard-val" id="s-ravg" style="color:var(--a1)">—</div>
-    <div class="scard-sub">7 matières variables</div>
+    <div class="scard-sub" id="ravg-sub">7 matières variables</div>
   </div>
 </div>
 
@@ -740,7 +753,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 
     <!-- Retake -->
     <div class="card cin d3">
-      <div class="sec-ttl">✏️ Matières à Rattraper <span class="sec-badge">7 matières</span>
+      <div class="sec-ttl">✏️ Matières à Rattraper <span class="sec-badge" id="retake-badge">7 matières</span>
         <span style="margin-left:auto;font-size:11px;color:var(--t3)" id="var-avg-lbl">Moy. —</span>
       </div>
       <div id="subs-container"></div>
@@ -783,7 +796,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
       </div>
       <div class="goal-grid">
         <div class="goal-item">
-          <div class="gl">Moyenne requise (6 autres)</div>
+          <div class="gl" id="goal-label">Moyenne requise (6 autres)</div>
           <div class="gv" id="goal-need">—</div>
         </div>
         <div class="goal-item">
@@ -811,7 +824,7 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 <!-- TARGETS -->
 <div class="targets-card cin d5">
   <div class="sec-ttl">📋 Notes Requises par Objectif</div>
-  <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:2px">Moyenne nécessaire dans les 6 autres matières de rattrapage (hors Analyse 1)</div>
+  <div style="font-size:11px;color:var(--t3);margin-top:-8px;margin-bottom:2px" id="targets-desc">Moyenne nécessaire dans les 6 autres matières de rattrapage (hors Analyse 1)</div>
   <div class="tgrid" id="tgrid"></div>
 </div>
 
@@ -835,58 +848,90 @@ input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// ── DATA ──────────────────────────────────────────────
-const FIXED_META = [
-  {name:'Atelier de Prog 1',     defGrade:0.00, cr:3},
-  {name:'Anglais 1',             defGrade:0.00, cr:2},
-  {name:'Tech de Communication', defGrade:0.00, cr:2}
-];
-const SUBS = [
-  {name:'Analyse 1',                  cr:3, def:0.00,  max:20,  hint:'(max ~7)'},
-  {name:'Algèbre 1',                  cr:3, def:0.00, max:20},
-  {name:'Algo et Structure',          cr:4, def:0.00, max:20},
-  {name:'Électricité Électronique',   cr:4, def:0.00, max:20},
-  {name:'Propagation et Rayonnement', cr:2, def:0.00, max:20},
-  {name:"Sys d'Exploitation 1",       cr:4, def:0.00, max:20},
-  {name:'Système Logique',            cr:3, def:0.00, max:20}
-];
-const TOTAL_CR = 30;
-const OTHER_CR = SUBS.slice(1).reduce((s,x)=>s+x.cr,0); // 20
-
-// ── MUTABLE FIXED STATE ───────────────────────────────
-let fixedGrades = (() => {
-  try { const v=JSON.parse(localStorage.getItem('aq_fixed')); if(Array.isArray(v)&&v.length===FIXED_META.length) return v; } catch(e){}
-  return FIXED_META.map(f=>f.defGrade);
-})();
-let fixedLocked = (() => {
-  try { const v=JSON.parse(localStorage.getItem('aq_locked')); if(Array.isArray(v)&&v.length===FIXED_META.length) return v; } catch(e){}
-  return FIXED_META.map(()=>true);
-})();
-function getFixedContrib(){ return fixedGrades.reduce((s,g,i)=>s+g*FIXED_META[i].cr,0); }
+// ── SEM DATA ──────────────────────────────────────────
+const SEM_DATA = {
+  1: {
+    semLabel: 'S1', label: 'S1 2025–26',
+    totalCr: 30, totalCrDisplay: 30,
+    fixed: [
+      {name:'Atelier de Prog 1',     defGrade:0, cr:3},
+      {name:'Anglais 1',             defGrade:0, cr:2},
+      {name:'Tech de Communication', defGrade:0, cr:2}
+    ],
+    subs: [
+      {name:'Analyse 1',                  cr:3, def:0, max:20, hint:'(max ~7)'},
+      {name:'Algèbre 1',                  cr:3, def:0, max:20},
+      {name:'Algo et Structure',          cr:4, def:0, max:20},
+      {name:'Électricité Électronique',   cr:4, def:0, max:20},
+      {name:'Propagation et Rayonnement', cr:2, def:0, max:20},
+      {name:"Sys d'Exploitation 1",       cr:4, def:0, max:20},
+      {name:'Système Logique',            cr:3, def:0, max:20}
+    ],
+    goalExcludeFirst: true,
+    keys: {grades:'aq_grades', fixed:'aq_fixed', locked:'aq_locked'}
+  },
+  2: {
+    semLabel: 'S2', label: 'S2 2025–26',
+    totalCr: 15, totalCrDisplay: 29,
+    fixed: [
+      {name:'Atelier de Prog 2',       defGrade:0, cr:1},
+      {name:'Culture Comp. Numérique', defGrade:0, cr:1},
+      {name:'Anglais 2',               defGrade:0, cr:1},
+      {name:'Tech de Communication 2', defGrade:0, cr:1}
+    ],
+    subs: [
+      {name:'Analyse 2',                   cr:1, def:0, max:20},
+      {name:'Algèbre 2',                   cr:1, def:0, max:20},
+      {name:'Init. Traitement du Signal',  cr:1, def:0, max:20},
+      {name:'Fonction Électronique',       cr:1, def:0, max:20},
+      {name:'Transmission de Données',     cr:1, def:0, max:20},
+      {name:'Architecture Ordinateurs',    cr:2, def:0, max:20},
+      {name:'Algo. Struct. de Données',    cr:2, def:0, max:20},
+      {name:"Système d'Exploitation 2",    cr:2, def:0, max:20}
+    ],
+    goalExcludeFirst: false,
+    keys: {grades:'aq_s2_grades', fixed:'aq_s2_fixed', locked:'aq_s2_locked'}
+  }
+};
 
 // ── STATE ─────────────────────────────────────────────
-let grades = (() => {
-  try { const v = JSON.parse(localStorage.getItem('aq_grades')); if(Array.isArray(v)&&v.length===SUBS.length) return v; } catch(e){}
-  return SUBS.map(s=>s.def);
-})();
+let currentSem = 0;
+let grades = [], fixedGrades = [], fixedLocked = [];
 
 let radarChart = null, barChart = null;
 let prevMoy = 0;
 const anims = {};
 
-// ── MATH ──────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────
+function SD() { return SEM_DATA[currentSem]; }
+
+function getFixedContrib() {
+  return fixedGrades.reduce((s,g,i) => s + g * SD().fixed[i].cr, 0);
+}
 function calcMoy(g) {
-  return (getFixedContrib() + g.reduce((s,v,i)=>s+v*SUBS[i].cr,0)) / TOTAL_CR;
+  return (getFixedContrib() + g.reduce((s,v,i) => s + v * SD().subs[i].cr, 0)) / SD().totalCr;
 }
 function neededFor(target) {
-  return (target*TOTAL_CR - getFixedContrib() - grades[0]*SUBS[0].cr) / OTHER_CR;
+  const sd = SD();
+  if(sd.goalExcludeFirst) {
+    const otherCr = sd.subs.slice(1).reduce((s,x)=>s+x.cr,0);
+    return (target*sd.totalCr - getFixedContrib() - grades[0]*sd.subs[0].cr) / otherCr;
+  } else {
+    const allCr = sd.subs.reduce((s,x)=>s+x.cr,0);
+    return (target*sd.totalCr - getFixedContrib()) / allCr;
+  }
+}
+
+// ── SAVE ──────────────────────────────────────────────
+function saveGrades() {
+  try { localStorage.setItem(SD().keys.grades, JSON.stringify(grades)); } catch(e){}
 }
 
 // ── BUILD FIXED ───────────────────────────────────────
 function buildFixed() {
   const c = document.getElementById('fixed-container');
   c.innerHTML = '';
-  FIXED_META.forEach((meta,i) => {
+  SD().fixed.forEach((meta,i) => {
     const locked = fixedLocked[i];
     const g = fixedGrades[i];
     const chipCls = g>=10?'ok':g>=7?'mid':'low';
@@ -923,8 +968,8 @@ function onFixed(i, val) {
 
 function saveFixed() {
   try {
-    localStorage.setItem('aq_fixed',  JSON.stringify(fixedGrades));
-    localStorage.setItem('aq_locked', JSON.stringify(fixedLocked));
+    localStorage.setItem(SD().keys.fixed,  JSON.stringify(fixedGrades));
+    localStorage.setItem(SD().keys.locked, JSON.stringify(fixedLocked));
   } catch(e){}
 }
 
@@ -940,7 +985,7 @@ function updateFixedContribDisplay() {
 function buildSubs() {
   const c = document.getElementById('subs-container');
   c.innerHTML = '';
-  SUBS.forEach((sub,i) => {
+  SD().subs.forEach((sub,i) => {
     const d = document.createElement('div');
     d.className = 'sub-card cin';
     d.id = `sc${i}`;
@@ -952,7 +997,7 @@ function buildSubs() {
           ${sub.hint?`<span class="sub-hint">${sub.hint}</span>`:''}
           <span class="cr-tag">Cr ${sub.cr}</span>
         </div>
-        <div class="sub-grade" id="sg${i}">${grades[i].toFixed(1)}</div>
+        <input type="number" class="sub-grade" id="sg${i}" min="0" max="${sub.max}" step="0.01" value="${grades[i].toFixed(2)}" onfocus="this.select()">
       </div>
       <div class="slider-wrap" id="sw${i}">
         <div class="s-tip" id="st${i}">${grades[i].toFixed(1)}</div>
@@ -960,11 +1005,13 @@ function buildSubs() {
       </div>`;
     c.appendChild(d);
     const sl = d.querySelector(`#sr${i}`);
+    const ni = d.querySelector(`#sg${i}`);
     sl.addEventListener('input', ()=>onSlide(i,sl));
     sl.addEventListener('mousedown',()=>{d.classList.add('drag');document.getElementById(`sw${i}`).classList.add('active')});
     sl.addEventListener('mouseup',()=>{d.classList.remove('drag');document.getElementById(`sw${i}`).classList.remove('active')});
     sl.addEventListener('touchstart',()=>{d.classList.add('drag');document.getElementById(`sw${i}`).classList.add('active')},{passive:true});
     sl.addEventListener('touchend',()=>{d.classList.remove('drag');document.getElementById(`sw${i}`).classList.remove('active')});
+    ni.addEventListener('input', ()=>onNumber(i,ni));
     updateFill(sl, sub.max);
     colorGrade(i);
   });
@@ -980,9 +1027,22 @@ function updateFill(sl, maxVal) {
 
 function onSlide(i, sl) {
   grades[i] = parseFloat(sl.value);
-  try { localStorage.setItem('aq_grades', JSON.stringify(grades)); } catch(e){}
-  document.getElementById(`sg${i}`).textContent = grades[i].toFixed(1);
-  updateFill(sl, SUBS[i].max);
+  saveGrades();
+  const ni = document.getElementById(`sg${i}`);
+  if(document.activeElement !== ni) ni.value = grades[i].toFixed(2);
+  updateFill(sl, SD().subs[i].max);
+  colorGrade(i);
+  updateAll();
+}
+
+function onNumber(i, inp) {
+  const raw = parseFloat(inp.value);
+  if(isNaN(raw)) return;
+  const v = Math.min(SD().subs[i].max, Math.max(0, raw));
+  grades[i] = v;
+  saveGrades();
+  const sl = document.getElementById(`sr${i}`);
+  if(sl){ sl.value = v; updateFill(sl, SD().subs[i].max); }
   colorGrade(i);
   updateAll();
 }
@@ -1015,6 +1075,7 @@ function animNum(el, to, dec=2, dur=280) {
 
 // ── UPDATE ALL ────────────────────────────────────────
 function updateAll() {
+  const sd = SD();
   const moy = calcMoy(grades);
 
   // Ring
@@ -1033,7 +1094,7 @@ function updateAll() {
   updateFixedContribDisplay();
 
   // Variable points
-  const vPts = grades.reduce((s,v,i)=>s+v*SUBS[i].cr,0);
+  const vPts = grades.reduce((s,v,i)=>s+v*sd.subs[i].cr,0);
   document.getElementById('var-pts').textContent = vPts.toFixed(2)+' pts';
   const rAvg = grades.reduce((s,v)=>s+v,0)/grades.length;
   document.getElementById('var-avg-lbl').textContent = `Moy. ${rAvg.toFixed(1)}`;
@@ -1066,7 +1127,7 @@ function updateAll() {
   const fls = document.getElementById('fl-status');
   fls.textContent = statusText(moy);
   fls.className = `fl-status ${statusClass(moy)}`;
-  document.getElementById('fl-sub').textContent = `${TOTAL_CR} crédits · rattrapage S1`;
+  document.getElementById('fl-sub').textContent = `${sd.totalCrDisplay} crédits · rattrapage ${sd.semLabel}`;
 }
 
 function gradeColor(v){
@@ -1095,7 +1156,7 @@ const MSGS = {
   excellent:["Performance exceptionnelle ! Vous êtes en tête de classe.","Incroyable ! Continuez sur cette lancée."],
   passing:  ["Vous êtes admis — visez maintenant la mention Bien (12)!","Bon travail. Un effort supplémentaire et vous atteignez 12."],
   close:    ["Si proche ! Un bon rattrapage peut tout changer.","Vous êtes à la limite. Concentrez-vous sur les matières à fort coefficient."],
-  failing:  ["Ne lâchez pas — maximisez chaque matière de rattrapage.","Chaque point compte. Ciblez Électricité et Sys d'Exploitation."]
+  failing:  ["Ne lâchez pas — maximisez chaque matière de rattrapage.","Chaque point compte. Ciblez les matières à coefficient élevé."]
 };
 let lastSC = '';
 
@@ -1116,8 +1177,9 @@ function updateStatus(moy) {
 
 // ── PREDICTION ────────────────────────────────────────
 function updatePred(moy) {
-  const bestG = SUBS.map(s=>s.max);
-  const worstG = SUBS.map(()=>4);
+  const sd = SD();
+  const bestG = sd.subs.map(s=>s.max);
+  const worstG = sd.subs.map(()=>4);
   const best  = calcMoy(bestG);
   const worst = calcMoy(worstG);
 
@@ -1137,29 +1199,32 @@ function updatePred(moy) {
 }
 
 function genRecs(moy) {
+  const sd = SD();
   const recs = [];
   const minI = grades.indexOf(Math.min(...grades));
-  const maxCrI = SUBS.reduce((b,s,i)=>s.cr>SUBS[b].cr?i:b,0);
+  const maxCrI = sd.subs.reduce((b,s,i)=>s.cr>sd.subs[b].cr?i:b,0);
+  const nOther = sd.goalExcludeFirst ? sd.subs.length-1 : sd.subs.length;
   if(moy<10){
-    recs.push({ico:'⚡',txt:`Priorité : ${SUBS[maxCrI].name} (${SUBS[maxCrI].cr} cr) — coefficient le plus élevé`});
+    recs.push({ico:'⚡',txt:`Priorité : ${sd.subs[maxCrI].name} (coef ${sd.subs[maxCrI].cr}) — coefficient le plus élevé`});
     const n=neededFor(10);
-    recs.push({ico:'🎯',txt: n<=20?`Il vous faut ${n.toFixed(1)} de moyenne dans les 6 autres matières pour atteindre 10`:'Atteindre 10 est très difficile — maximisez chaque note'});
-    recs.push({ico:'💡',txt:`${SUBS[minI].name} est votre point faible (${grades[minI].toFixed(1)}) — améliorez-la si possible`});
+    recs.push({ico:'🎯',txt: n<=20?`Il vous faut ${n.toFixed(1)} de moyenne dans les ${nOther} matières pour atteindre 10`:'Atteindre 10 est très difficile — maximisez chaque note'});
+    recs.push({ico:'💡',txt:`${sd.subs[minI].name} est votre point faible (${grades[minI].toFixed(1)}) — améliorez-la si possible`});
   } else if(moy<12){
     recs.push({ico:'✅',txt:'Vous êtes admis — excellent travail !'});
     const n12=neededFor(12);
-    if(n12<=20) recs.push({ico:'🚀',txt:`Pour la mention Bien, il faut ${n12.toFixed(1)} moy. dans les 6 autres matières`});
-    recs.push({ico:'📈',txt:`Boostez ${SUBS[minI].name} pour améliorer votre classement`});
+    if(n12<=20) recs.push({ico:'🚀',txt:`Pour la mention Bien, il faut ${n12.toFixed(1)} moy. dans les ${nOther} matières`});
+    recs.push({ico:'📈',txt:`Boostez ${sd.subs[minI].name} pour améliorer votre classement`});
   } else {
     recs.push({ico:'🏆',txt:'Excellent ! Vous obtenez la mention Bien ou mieux'});
     recs.push({ico:'⭐',txt:'Maintenez ces performances dans toutes les matières'});
-    recs.push({ico:'🎓',txt:'Vous êtes bien préparé pour le semestre suivant'});
+    recs.push({ico:'🎓',txt:'Vous êtes bien préparé pour la suite !'});
   }
   return recs.slice(0,3);
 }
 
 // ── GOAL ──────────────────────────────────────────────
 function updateGoal() {
+  const sd = SD();
   const target = parseFloat(document.getElementById('goal-inp').value)||10;
   const needed = neededFor(target);
   const moy = calcMoy(grades);
@@ -1171,9 +1236,18 @@ function updateGoal() {
   te.textContent=moy>=target?'✓ Oui':'✗ Non';
   te.style.color=moy>=target?'var(--ok)':'var(--err)';
   const msg=document.getElementById('goal-msg');
-  if(needed<=0) msg.textContent=`Félicitations ! Vous avez déjà atteint votre objectif de ${target}/20 🎉`;
-  else if(needed>20) msg.textContent=`Atteindre ${target}/20 est mathématiquement impossible avec la note actuelle d'Analyse 1. Essayez un objectif plus bas.`;
-  else msg.textContent=`Pour atteindre ${target}/20, vous avez besoin d'une moyenne de ${needed.toFixed(2)} dans Algèbre, Algo et Structure, Électricité, Propagation, Sys Exp. et Sys Logique.`;
+  if(needed<=0){
+    msg.textContent=`Félicitations ! Vous avez déjà atteint votre objectif de ${target}/20 🎉`;
+  } else if(needed>20){
+    msg.textContent = sd.goalExcludeFirst
+      ? `Atteindre ${target}/20 est mathématiquement impossible avec la note actuelle de ${sd.subs[0].name}. Essayez un objectif plus bas.`
+      : `Atteindre ${target}/20 est mathématiquement impossible avec vos notes actuelles. Essayez un objectif plus bas.`;
+  } else {
+    const who = sd.goalExcludeFirst
+      ? `les ${sd.subs.length-1} autres matières (hors ${sd.subs[0].name})`
+      : `les ${sd.subs.length} matières de rattrapage`;
+    msg.textContent=`Pour atteindre ${target}/20, vous avez besoin d'une moyenne de ${needed.toFixed(2)} dans ${who}.`;
+  }
 }
 
 // ── TARGETS ───────────────────────────────────────────
@@ -1204,12 +1278,15 @@ const CHART_DEFAULTS = {
 };
 
 function initCharts() {
+  const sd = SD();
+  if(radarChart){radarChart.destroy();radarChart=null;}
+  if(barChart){barChart.destroy();barChart=null;}
   try {
     const rCtx = document.getElementById('radarC').getContext('2d');
     radarChart = new Chart(rCtx,{
       type:'radar',
       data:{
-        labels:SUBS.map(s=>s.name.length>15?s.name.slice(0,13)+'…':s.name),
+        labels:sd.subs.map(s=>s.name.length>15?s.name.slice(0,13)+'…':s.name),
         datasets:[{
           label:'Note',data:grades,
           backgroundColor:'rgba(79,158,255,.12)',
@@ -1245,8 +1322,8 @@ function initCharts() {
       type:'bar',
       data:{
         labels:[
-          ...FIXED_META.map(f=>f.name.split(' ').slice(0,2).join(' ')),
-          ...SUBS.map(s=>s.name.split(' ').slice(0,2).join(' '))
+          ...sd.fixed.map(f=>f.name.split(' ').slice(0,2).join(' ')),
+          ...sd.subs.map(s=>s.name.split(' ').slice(0,2).join(' '))
         ],
         datasets:[{
           label:'Note',
@@ -1260,7 +1337,7 @@ function initCharts() {
       },
       options:{...CHART_DEFAULTS,
         plugins:{...CHART_DEFAULTS.plugins,tooltip:{callbacks:{
-          afterBody:items=>`Crédits: ${items[0].dataIndex<FIXED_META.length?FIXED_META[items[0].dataIndex].cr:SUBS[items[0].dataIndex-FIXED_META.length].cr}`
+          afterBody:items=>`Crédits: ${items[0].dataIndex<sd.fixed.length?sd.fixed[items[0].dataIndex].cr:sd.subs[items[0].dataIndex-sd.fixed.length].cr}`
         }}},
         scales:{
           x:{ticks:{color:'#475569',font:{size:9,family:'Inter'}},grid:{color:'rgba(255,255,255,.04)'}},
@@ -1295,8 +1372,7 @@ function setAccent(a){
   document.querySelectorAll('.tdot').forEach(d=>d.classList.remove('active'));
   document.querySelector(`.tdot[data-accent="${a}"]`).classList.add('active');
   try{localStorage.setItem('aq_accent',a);}catch(e){}
-  // Re-apply slider fills after accent change
-  SUBS.forEach((_,i)=>{const sl=document.getElementById(`sr${i}`);if(sl) updateFill(sl,SUBS[i].max);});
+  if(currentSem) SD().subs.forEach((_,i)=>{const sl=document.getElementById(`sr${i}`);if(sl) updateFill(sl,SD().subs[i].max);});
 }
 
 // ── EXPORT ────────────────────────────────────────────
@@ -1321,18 +1397,19 @@ function toast(msg){
 
 // ── RESET ─────────────────────────────────────────────
 function doReset(){
-  grades=SUBS.map(s=>s.def);
-  fixedGrades=FIXED_META.map(f=>f.defGrade);
-  fixedLocked=FIXED_META.map(()=>true);
-  try{localStorage.setItem('aq_grades',JSON.stringify(grades));}catch(e){}
+  const sd = SD();
+  grades=sd.subs.map(s=>s.def);
+  fixedGrades=sd.fixed.map(f=>f.defGrade);
+  fixedLocked=sd.fixed.map(()=>true);
+  saveGrades();
   saveFixed();
   buildFixed();
-  SUBS.forEach((_,i)=>{
+  sd.subs.forEach((_,i)=>{
     const sl=document.getElementById(`sr${i}`);
     if(!sl) return;
-    sl.value=SUBS[i].def;
-    updateFill(sl,SUBS[i].max);
-    document.getElementById(`sg${i}`).textContent=SUBS[i].def.toFixed(1);
+    sl.value=sd.subs[i].def;
+    updateFill(sl,sd.subs[i].max);
+    document.getElementById(`sg${i}`).value=sd.subs[i].def.toFixed(2);
     colorGrade(i);
   });
   updateAll();
@@ -1343,8 +1420,8 @@ function doReset(){
 document.addEventListener('keydown',e=>{
   if(e.target.matches('input')) return;
   if(e.key==='t') setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
-  if(e.key==='r') doReset();
-  if(e.key==='e') doExport();
+  if(e.key==='r'&&currentSem) doReset();
+  if(e.key==='e'&&currentSem) doExport();
   if(e.key==='1') setAccent('blue');
   if(e.key==='2') setAccent('purple');
   if(e.key==='3') setAccent('cyan');
@@ -1364,42 +1441,70 @@ function initParticles() {
     c.appendChild(p);
   }
 }
-function enterSem1() {
+function enterSem(sem) {
+  currentSem = sem;
+  lastSC = '';
+  const sd = SEM_DATA[sem];
+
+  // Load sem-specific state
+  grades = (() => {
+    try { const v=JSON.parse(localStorage.getItem(sd.keys.grades)); if(Array.isArray(v)&&v.length===sd.subs.length) return v; } catch(e){}
+    return sd.subs.map(s=>s.def);
+  })();
+  fixedGrades = (() => {
+    try { const v=JSON.parse(localStorage.getItem(sd.keys.fixed)); if(Array.isArray(v)&&v.length===sd.fixed.length) return v; } catch(e){}
+    return sd.fixed.map(f=>f.defGrade);
+  })();
+  fixedLocked = (() => {
+    try { const v=JSON.parse(localStorage.getItem(sd.keys.locked)); if(Array.isArray(v)&&v.length===sd.fixed.length) return v; } catch(e){}
+    return sd.fixed.map(()=>true);
+  })();
+
+  // Update dynamic labels
+  document.getElementById('brand-sub').textContent = `Rattrapage Dashboard · ${sd.label}`;
+  document.getElementById('hero-credits').textContent = `${sd.totalCrDisplay} crédits · ${sd.subs.length} rattrapages`;
+  document.getElementById('ravg-sub').textContent = `${sd.subs.length} matières variables`;
+  document.getElementById('retake-badge').textContent = `${sd.subs.length} matières`;
+  const goalLbl = sd.goalExcludeFirst ? `${sd.subs.length-1} autres` : `${sd.subs.length} matières`;
+  document.getElementById('goal-label').textContent = `Moyenne requise (${goalLbl})`;
+  document.getElementById('targets-desc').textContent = sd.goalExcludeFirst
+    ? `Moyenne nécessaire dans les ${sd.subs.length-1} autres matières de rattrapage (hors ${sd.subs[0].name})`
+    : `Moyenne nécessaire dans les ${sd.subs.length} matières de rattrapage`;
+
+  // Show back button
+  document.getElementById('back-btn').style.display = '';
+
+  // Hide landing
   const l = document.getElementById('landing');
   l.classList.add('landing-exit');
   setTimeout(()=>{ l.style.display='none'; }, 430);
+
+  // Build UI then render
+  buildFixed();
+  buildSubs();
+  setTimeout(()=>{ initCharts(); updateAll(); }, 120);
 }
-function showComingSoon() {
-  document.getElementById('cs-overlay').classList.add('show');
-}
-function hideComingSoon() {
-  document.getElementById('cs-overlay').classList.remove('show');
-}
+
+function enterSem1() { enterSem(1); }
+function enterSem2() { enterSem(2); }
+function showComingSoon() { document.getElementById('cs-overlay').classList.add('show'); }
+function hideComingSoon() { document.getElementById('cs-overlay').classList.remove('show'); }
 
 // ── INIT ──────────────────────────────────────────────
 function init(){
   initParticles();
-  // Restore preferences
   const th=localStorage.getItem('aq_theme')||'dark';
   const ac=localStorage.getItem('aq_accent')||'blue';
   setTheme(th); setAccent(ac);
 
-  // Build UI
-  buildFixed();
-  buildSubs();
-
-  // Events
   document.getElementById('theme-btn').addEventListener('click',()=>{
     const cur=document.documentElement.getAttribute('data-theme');
     setTheme(cur==='dark'?'light':'dark');
   });
-  document.getElementById('reset-btn').addEventListener('click',doReset);
-  document.getElementById('export-btn').addEventListener('click',doExport);
+  document.getElementById('reset-btn').addEventListener('click',()=>{ if(currentSem) doReset(); });
+  document.getElementById('export-btn').addEventListener('click',()=>{ if(currentSem) doExport(); });
   document.querySelectorAll('.tdot').forEach(d=>d.addEventListener('click',()=>setAccent(d.dataset.accent)));
-  document.getElementById('goal-inp').addEventListener('input',updateGoal);
-
-  // Charts + first render
-  setTimeout(()=>{ initCharts(); updateAll(); }, 120);
+  document.getElementById('goal-inp').addEventListener('input',()=>{ if(currentSem) updateGoal(); });
 }
 
 init();
