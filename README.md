@@ -35,7 +35,7 @@ An interactive web dashboard for ISTIC students to simulate and track **rattrapa
 | Sys d'Exploitation 1 | 4 | Rattrapage |
 | Système Logique | 3 | Rattrapage |
 
-### Semestre 2 — 29 credits · 8 rattrapage subjects
+### Semestre 2 — 30 credits · 8 rattrapage subjects
 
 | Subject | Coef | Type |
 |---|---|---|
